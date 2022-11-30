@@ -1,0 +1,110 @@
+LIBRARY IEEE;
+USE IEEE.STD_LOGIC_1164.ALL;
+USE IEEE.NUMERIC_STD.ALL;
+
+
+ENTITY ProjetoFinal IS
+	PORT(
+		
+		CLOCK: IN STD_LOGIC;
+		CONT: OUT STD_LOGIC_VECTOR(0 TO 6);
+		VERDE1: OUT STD_LOGIC;
+		VERDE2: OUT STD_LOGIC;
+		AMARELO1: OUT STD_LOGIC;
+		AMARELO2: OUT STD_LOGIC;
+		VERMELHO1: OUT STD_LOGIC;
+		VERMELHO2: OUT STD_LOGIC
+		
+		
+	);
+END ProjetoFinal;
+
+ARCHITECTURE SEMAFORO OF ProjetoFinal IS 
+
+CONSTANT CLOCK_FREE : INTEGER := 50e6;
+SIGNAL TICKS : INTEGER := 0;
+SIGNAL SEGUNDOS: INTEGER := 0;
+SIGNAL AUX: INTEGER:= 0;
+
+
+BEGIN
+	
+	PROCESS (CLOCK) IS
+	BEGIN
+	
+		IF RISING_EDGE(CLOCK) THEN -- NA BORDA DO CLOCK
+			IF TICKS = CLOCK_FREE - 1 THEN
+				TICKS <= 0;
+				-- CONTADOR DE TICKS
+				IF SEGUNDOS = 0 THEN 
+					--SEMAFORO1
+					VERDE1 <= 0;
+					AMARELO1 <= 1;
+					VERMELHO1<= 1;
+					--SEMAFORO 2
+					VERDE2 <= 1;
+					AMARELO2 <= 1;
+					VERMELHO2<= 0;
+					AUX <= 0;
+					
+				ELSIF SEGUNDOS = 5 THEN
+					--SEMAFORO1
+					VERDE1 <= 1;
+					AMARELO1 <= 0;
+					VERMELHO1<= 1;
+					--SEMAFORO 2
+					VERDE2 <= 1;
+					AMARELO2 <= 1;
+					VERMELHO2<= 0;
+					AUX <= 0;
+					
+				ELSIF SEGUNDOS = 10 THEN 
+					--SEMAFORO1
+					VERDE1 <= 1;
+					AMARELO1 <= 1;
+					VERMELHO1<= 0;
+					--SEMAFORO 2
+					VERDE2 <= 0;
+					AMARELO2 <= 1;
+					VERMELHO2<= 1;
+					AUX <= 0;
+					
+				ELSIF SEGUNDOS = 15 THEN 
+					--SEMAFORO1
+					VERDE1 <= 1;
+					AMARELO1 <= 1;
+					VERMELHO1<= 0;
+					--SEMAFORO 2
+					VERDE2 <= 1;
+					AMARELO2 <= 0;
+					VERMELHO2<= 1;
+					AUX <= 0;
+					
+				ELSIF SEGUNDOS = 20 THEN 
+					SEGUNDOS <= 0;
+					AUX <= 0;
+					
+				ELSE 
+					SEGUNDOS <= SEGUNDOS + 1;
+					AUX <= AUX + 1;
+				
+				END IF;
+				
+			ELSE
+				TICKS <= ticks + 1;
+			END IF;
+			
+		END IF;
+		
+		
+	END PROCESS;
+	
+	CONT <=  "1000000" when AUX = 0 else
+				"1111001" when AUX = 1 else
+				"0100100" when AUX = 2 else
+				"0110000" when AUX = 3 else	
+				"0011001" when AUX = 4 else
+			   "0010010" when AUX = 5;
+
+
+END SEMAFORO;
