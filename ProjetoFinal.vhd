@@ -1,110 +1,135 @@
-LIBRARY IEEE;
-USE IEEE.STD_LOGIC_1164.ALL;
-USE IEEE.NUMERIC_STD.ALL;
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.std_logic_arith.all;
 
-
-ENTITY ProjetoFinal IS
-	PORT(
-		
-		CLOCK: IN STD_LOGIC;
-		CONT: OUT STD_LOGIC_VECTOR(0 TO 6);
-		VERDE1: OUT STD_LOGIC;
-		VERDE2: OUT STD_LOGIC;
-		AMARELO1: OUT STD_LOGIC;
-		AMARELO2: OUT STD_LOGIC;
-		VERMELHO1: OUT STD_LOGIC;
-		VERMELHO2: OUT STD_LOGIC
-		
+entity Aula_2 is 
+	port
+	(
+		sys_clk: in std_logic;
+		saida: out std_logic_vector( 6 downto 0);
+		saida_leds : out std_logic_vector( 3 downto 0);
+		botao : in std_logic;
+		verde1: out std_logic;
+		verde2: out std_logic;
+		amarelo1: out std_logic;
+		amarelo2: out std_logic;
+		vermelho1: out std_logic;
+		vermelho2: out std_logic;
+		display_1: out std_logic_vector( 6 downto 0);
+		display_2: out std_logic_vector( 6 downto 0);
+		display_3: out std_logic_vector( 6 downto 0);
+		display_4: out std_logic_vector( 6 downto 0)
 		
 	);
-END ProjetoFinal;
+end Aula_2;	
 
-ARCHITECTURE SEMAFORO OF ProjetoFinal IS 
+-- Frequencia de 50Mhz no clock 50*10^6
 
-CONSTANT CLOCK_FREE : INTEGER := 50e6;
-SIGNAL TICKS : INTEGER := 0;
-SIGNAL SEGUNDOS: INTEGER := 0;
-SIGNAL AUX: INTEGER:= 0;
+architecture circuito of Aula_2 is
 
+constant clock_free : integer := 50e6;
+signal ticks : integer := 0;
+signal segundos: integer := 0;
+signal cont_leds : std_logic_vector (3 downto 0);
+signal aux : integer := 5;
 
-BEGIN
+begin
 	
-	PROCESS (CLOCK) IS
-	BEGIN
+	process (sys_clk) is
+	begin
 	
-		IF RISING_EDGE(CLOCK) THEN -- NA BORDA DO CLOCK
-			IF TICKS = CLOCK_FREE - 1 THEN
-				TICKS <= 0;
-				-- CONTADOR DE TICKS
-				IF SEGUNDOS = 0 THEN 
-					--SEMAFORO1
-					VERDE1 <= 0;
-					AMARELO1 <= 1;
-					VERMELHO1<= 1;
-					--SEMAFORO 2
-					VERDE2 <= 1;
-					AMARELO2 <= 1;
-					VERMELHO2<= 0;
-					AUX <= 0;
+		if rising_edge(sys_clk) then
+			if ticks = clock_free - 1 then
+				ticks <= 0;
+				if segundos = 0 then 
+					--semaforo1
+					verde1 <= '1';
+					amarelo1 <= '0';
+					vermelho1<= '0';
+					--semaforo 2
+					verde2 <= '0';
+					amarelo2 <= '0';
+					vermelho2<= '1';
+					aux <= 5;
+					segundos <= segundos + 1;
 					
-				ELSIF SEGUNDOS = 5 THEN
-					--SEMAFORO1
-					VERDE1 <= 1;
-					AMARELO1 <= 0;
-					VERMELHO1<= 1;
-					--SEMAFORO 2
-					VERDE2 <= 1;
-					AMARELO2 <= 1;
-					VERMELHO2<= 0;
-					AUX <= 0;
+				elsif segundos = 5 then
+					--semaforo1
+					verde1 <= '0';
+					amarelo1 <= '1';
+					vermelho1<= '0';
+					--semaforo 2
+					verde2 <= '0';
+					amarelo2 <= '0';
+					vermelho2<= '1';
+					aux <= 5;
+					segundos <= segundos + 1;
 					
-				ELSIF SEGUNDOS = 10 THEN 
-					--SEMAFORO1
-					VERDE1 <= 1;
-					AMARELO1 <= 1;
-					VERMELHO1<= 0;
-					--SEMAFORO 2
-					VERDE2 <= 0;
-					AMARELO2 <= 1;
-					VERMELHO2<= 1;
-					AUX <= 0;
+				elsif segundos = 10 then 
+					--semaforo1
+					verde1 <= '0';
+					amarelo1 <= '0';
+					vermelho1<= '1';
+					--semaforo 2
+					verde2 <= '1';
+					amarelo2 <= '0';
+					vermelho2<= '0';
+					aux <= 5;
+					segundos <= segundos + 1;
 					
-				ELSIF SEGUNDOS = 15 THEN 
-					--SEMAFORO1
-					VERDE1 <= 1;
-					AMARELO1 <= 1;
-					VERMELHO1<= 0;
-					--SEMAFORO 2
-					VERDE2 <= 1;
-					AMARELO2 <= 0;
-					VERMELHO2<= 1;
-					AUX <= 0;
+				elsif segundos = 15 then 
+					--semaforo1
+					verde1 <= '0';
+					amarelo1 <= '0';
+					vermelho1<= '1';
+					--semaforo 2
+					verde2 <= '0';
+					amarelo2 <= '1';
+					vermelho2<= '0';
+					aux <= 5;
+					segundos <= segundos + 1;
 					
-				ELSIF SEGUNDOS = 20 THEN 
-					SEGUNDOS <= 0;
-					AUX <= 0;
+				elsif segundos = 20 then 
+					segundos <= 0;
+					aux <= 5;
 					
-				ELSE 
-					SEGUNDOS <= SEGUNDOS + 1;
-					AUX <= AUX + 1;
-				
-				END IF;
-				
-			ELSE
-				TICKS <= ticks + 1;
-			END IF;
-			
-		END IF;
+				else
+					segundos <= segundos + 1;
+					aux <= aux - 1;
+				end if;
+			else
+				ticks <= ticks + 1;
+			end if;
+		end if;
 		
-		
-	END PROCESS;
+	if botao = '0' then
+		ticks <= 0;
+		aux <= 5;
+		segundos <= 0;
+	end if;
 	
-	CONT <=  "1000000" when AUX = 0 else
-				"1111001" when AUX = 1 else
-				"0100100" when AUX = 2 else
-				"0110000" when AUX = 3 else	
-				"0011001" when AUX = 4 else
-			   "0010010" when AUX = 5;
-
-
-END SEMAFORO;
+	cont_leds <= conv_std_logic_vector(segundos,4);	
+	end process;
+	--        6543210
+	saida <= "1000000" when aux = 0 else
+				"1111001" when aux = 1 else
+				"0100100" when aux = 2 else
+            "0110000" when aux = 3 else	
+				"0011001" when aux = 4 else
+				"0010010" when aux = 5;
+				
+	saida_leds <= cont_leds;
+	--            6543210
+	display_1 <= "0000010" when segundos > 10 AND segundos <= 20 else
+					 "1111111" when segundos > 0 AND segundos <= 10 ;
+				
+	display_2 <= "1111111" when segundos > 10 AND segundos <= 20 else
+				    "0001100" when segundos > 0 AND segundos <= 10;
+				
+	display_3 <= "0000010" when segundos > 0 AND segundos <= 10 else
+					 "1111111" when segundos > 10 AND segundos <= 20;
+				
+	display_4 <= "1111111" when segundos > 0 AND segundos <= 10 else
+				    "0001100" when segundos > 10 AND segundos <= 20;
+	
+end circuito;
