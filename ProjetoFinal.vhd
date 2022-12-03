@@ -2,36 +2,36 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.std_logic_arith.all;
 
-entity Aula_2 is 
+entity PtojetoFinal is 
 	port
 	(
 		sys_clk: in std_logic;
-		saida: out std_logic_vector( 6 downto 0);
-		saida_leds : out std_logic_vector( 3 downto 0);
-		botao : in std_logic;
+		saida: out std_logic_vector( 6 downto 0); --display do timer 
+		saida_leds : out std_logic_vector( 3 downto 0); --leds do contador de tempo binario
+		botao : in std_logic; --botao de reset
 		verde1: out std_logic;
 		verde2: out std_logic;
 		amarelo1: out std_logic;
 		amarelo2: out std_logic;
 		vermelho1: out std_logic;
 		vermelho2: out std_logic;
-		display_1: out std_logic_vector( 6 downto 0);
-		display_2: out std_logic_vector( 6 downto 0);
-		display_3: out std_logic_vector( 6 downto 0);
-		display_4: out std_logic_vector( 6 downto 0)
+		display_1: out std_logic_vector( 6 downto 0); -- G (go - vai) para semaforo de pedestres 1
+		display_2: out std_logic_vector( 6 downto 0); -- P (pare) para semaforo de pedestres 1
+		display_3: out std_logic_vector( 6 downto 0); -- G (go - vai) para semaforo de pedestres 2
+		display_4: out std_logic_vector( 6 downto 0) -- P (pare) para semaforo de pedestres 2
 		
 	);
-end Aula_2;	
+end ProjetoFinal;	
 
 -- Frequencia de 50Mhz no clock 50*10^6
 
-architecture circuito of Aula_2 is
+architecture Semaforo of ProjetoFinal is
 
 constant clock_free : integer := 50e6;
 signal ticks : integer := 0;
 signal segundos: integer := 0;
 signal cont_leds : std_logic_vector (3 downto 0);
-signal aux : integer := 5;
+signal aux : integer := 5; --timer que vai decrementar para cada luz
 
 begin
 	
@@ -132,4 +132,4 @@ begin
 	display_4 <= "1111111" when segundos > 0 AND segundos <= 10 else
 				    "0001100" when segundos > 10 AND segundos <= 20;
 	
-end circuito;
+end Semaforo;
