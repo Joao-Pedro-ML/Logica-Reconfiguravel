@@ -5,7 +5,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.std_logic_arith.all;
 
-entity PtojetoFinal is 
+entity ProjetoFinal is 
 	port
 	(
 		sys_clk: in std_logic;
